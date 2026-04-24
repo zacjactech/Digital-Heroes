@@ -1,0 +1,71 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "skill": {
+      "*": "allow"
+    }
+  },
+  "instructions": "Always load relevant skills for this project. Key skills are in ~/.agents/skills/: supabase, supabase-postgres-best-practices, stripe-best-practices, stripe-projects, upgrade-stripe, vercel-react-best-practices, tailwind-design-system, nextjs-app-router-patterns, shadcn, zustand, resend, find-skills. For detailed project rules, see AGENTS.md.",
+  "context": {
+    "project-type": "Next.js 15 + Supabase + Stripe",
+    "tech-stack": [
+      "Next.js 15 (App Router)",
+      "React 19",
+      "Tailwind CSS v4",
+      "Framer Motion",
+      "Supabase Auth + Database",
+      "Stripe Checkout",
+      "Resend Email"
+    ]
+  },
+  "standards": {
+    "security": [
+      "Never use 'any' type - TypeScript strict mode enabled",
+      "Never log secrets, API keys, or user credentials",
+      "Always use server client for mutations, browser client for reads",
+      "Never expose SUPABASE_SERVICE_ROLE_KEY to client",
+      "Validate all inputs with Zod schemas",
+      "Use parameterized queries to prevent SQL injection",
+      "Validate Stripe webhook signatures before processing",
+      "Never commit secrets - use .env files only"
+    ],
+    "validation": [
+      "All functions must have explicit return types",
+      "All props must be typed",
+      "No implicit any",
+      "Use strict null checks"
+    ],
+    "scalability": [
+      "Max 5 scores per user - auto-delete oldest",
+      "One score per user per date (unique constraint)",
+      "Implement pagination for score/draw history"
+    ],
+    "privacy": [
+      "Never expose user emails in client-side responses",
+      "Use RLS policies to restrict data access",
+      "Hash sensitive data before storage"
+    ],
+    "reliability": [
+      "Never use setTimeout for critical logic",
+      "Handle all Supabase/Stripe errors explicitly",
+      "Always verify subscription status before granting access"
+    ],
+    "performance": [
+      "Never use React useEffect for Server Components",
+      "Use React Server Components for data fetching",
+      "Optimize images with Next.js Image component"
+    ]
+  },
+  "required-checks": [
+    "pnpm lint - must pass before commit",
+    "pnpm typecheck - must pass before commit",
+    "pnpm build - must succeed before deploy"
+  ],
+  "forbidden-patterns": [
+    "console.log in production code",
+    "any type",
+    "TODO without ticket reference",
+    "Hardcoded secrets",
+    "eval() or new Function()"
+  ]
+}

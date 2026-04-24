@@ -1,13 +1,28 @@
-// Public landing page — route: /
-// Assembled from stitch mockup: /stitch/digital_heroes_landing_page/
-// Read /stitch/digital_heroes_landing_page/code.html before editing
+import {
+  Navbar,
+  HeroSection,
+  HowItWorks,
+  PrizeTiers,
+  CharitySpotlight,
+  DrawCountdown,
+  FinalCTA,
+  Footer,
+} from '@/components/landing'
 
-export default function LandingPage() {
+export default function Home() {
   return (
-    <main>
-      <p className="p-8 text-forest font-heading">
-        Landing page — implement from stitch mockup
-      </p>
-    </main>
+    <>
+      <Navbar />
+      <main>
+        <HeroSection />
+        <HowItWorks />
+        <PrizeTiers />
+        <CharitySpotlight />
+        <DrawCountdown />
+        <FinalCTA />
+      </main>
+      <Footer />
+    </>
   )
 }
+

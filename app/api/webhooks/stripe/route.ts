@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import Stripe from 'stripe'
+import { stripe } from '@/lib/stripe/client'
 import { createClient } from '@/lib/supabase/server'
+import { 
+  handleInvoicePaid, 
+  handleSubscriptionUpdated, 
+  handleSubscriptionDeleted,
+  handleDisputeCreated 
+} from '@/lib/stripe/webhook-handlers'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-02-24.acacia',
-})
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SupabaseClient = any
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const body = await request.text()
@@ -25,104 +31,67 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     )
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Webhook signature verification failed'
+    console.error(`Webhook signature verification failed: ${message}`)
     return NextResponse.json({ error: message }, { status: 400 })
   }
 
-  const supabase = await createClient()
+  const supabase = await createClient() as SupabaseClient
 
-  // Store raw event in audit log
-  await (supabase.from('subscription_events' as any) as any).insert({
-    stripe_event_id: event.id,
-    event_type: event.type,
-    payload: event as any,
-    processed_at: new Date().toISOString(),
-  })
+  const existingEventQuery = await (supabase
+    .from('subscription_events')
+    .select('id')
+    .eq('stripe_event_id', event.id) as { single: () => Promise<{ data: { id: string } | null }> })
+    .single()
+
+  if (existingEventQuery.data) {
+    return NextResponse.json({ received: true, duplicated: true })
+  }
+
+  const eventObject = event.data.object as { customer?: string }
+  const userId = eventObject.customer ? await getUserIdFromCustomer(eventObject.customer) : null
+
+  await (supabase
+    .from('subscription_events')
+    .insert({
+      stripe_event_id: event.id,
+      event_type: event.type,
+      payload: event,
+      user_id: userId,
+    }) as { then: (cb: (res: { error: Error | null }) => void) => void })
+    .then(() => {})
 
   try {
     switch (event.type) {
-      case 'invoice.paid': {
-        const invoice = event.data.object as Stripe.Invoice
-        await handleInvoicePaid(supabase, invoice)
+      case 'invoice.paid':
+        await handleInvoicePaid(supabase, event.data.object as Stripe.Invoice)
         break
-      }
-      case 'customer.subscription.updated': {
-        const subscription = event.data.object as Stripe.Subscription
-        await handleSubscriptionUpdated(supabase, subscription)
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpdated(supabase, event.data.object as Stripe.Subscription)
         break
-      }
-      case 'customer.subscription.deleted': {
-        const subscription = event.data.object as Stripe.Subscription
-        await handleSubscriptionDeleted(supabase, subscription)
+      case 'customer.subscription.deleted':
+        await handleSubscriptionDeleted(supabase, event.data.object as Stripe.Subscription)
         break
-      }
-      case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice
-        await handlePaymentFailed(supabase, invoice)
+      case 'charge.dispute.created':
+        await handleDisputeCreated(supabase, event.data.object as Stripe.Dispute)
         break
-      }
       default:
-        // Unhandled event types — log and return 200 to prevent retries
         break
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Webhook handler error'
     console.error(`Webhook handler failed for ${event.type}:`, message)
-    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
   }
 
   return NextResponse.json({ received: true })
 }
 
-async function handleInvoicePaid(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  invoice: Stripe.Invoice
-): Promise<void> {
-  if (!invoice.customer) return
-
-  const { error } = await (supabase.from('profiles' as any) as any)
-    .update({
-      subscription_status: 'active',
-      stripe_customer_id: invoice.customer as string,
-      subscription_renewed_at: new Date().toISOString(),
-    })
-    .eq('stripe_customer_id', invoice.customer as string)
-
-  if (error) throw new Error(`Failed to activate subscription: ${error.message}`)
-}
-
-async function handleSubscriptionUpdated(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  subscription: Stripe.Subscription
-): Promise<void> {
-  const status = subscription.status === 'active' ? 'active' : 'lapsed'
-
-  const { error } = await (supabase.from('profiles' as any) as any)
-    .update({ subscription_status: status })
-    .eq('stripe_customer_id', subscription.customer as string)
-
-  if (error) throw new Error(`Failed to update subscription: ${error.message}`)
-}
-
-async function handleSubscriptionDeleted(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  subscription: Stripe.Subscription
-): Promise<void> {
-  const { error } = await (supabase.from('profiles' as any) as any)
-    .update({ subscription_status: 'cancelled' })
-    .eq('stripe_customer_id', subscription.customer as string)
-
-  if (error) throw new Error(`Failed to cancel subscription: ${error.message}`)
-}
-
-async function handlePaymentFailed(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  invoice: Stripe.Invoice
-): Promise<void> {
-  if (!invoice.customer) return
-
-  const { error } = await (supabase.from('profiles' as any) as any)
-    .update({ subscription_status: 'lapsed' })
-    .eq('stripe_customer_id', invoice.customer as string)
-
-  if (error) throw new Error(`Failed to mark subscription lapsed: ${error.message}`)
+async function getUserIdFromCustomer(customerId: string): Promise<string | null> {
+  const supabase = await createClient() as SupabaseClient
+  const profileQuery = await (supabase
+    .from('profiles')
+    .select('id')
+    .eq('stripe_customer_id', customerId) as { single: () => Promise<{ data: { id: string } | null }> })
+    .single()
+  
+  return profileQuery.data?.id ?? null
 }

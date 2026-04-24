@@ -1,7 +1,13 @@
 import Stripe from 'stripe'
 
-// Singleton Stripe client — server-side only
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-02-24.acacia',
-  typescript: true,
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('STRIPE_SECRET_KEY is not defined in environment variables')
+}
+
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2025-02-24.acacia', // Using the latest stable version available in my context
+  appInfo: {
+    name: 'Digital Heroes',
+    version: '0.1.0',
+  },
 })

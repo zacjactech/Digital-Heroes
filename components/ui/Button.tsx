@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -7,6 +8,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg'
   isLoading?: boolean
   fullWidth?: boolean
+  href?: string
   children: React.ReactNode
 }
 
@@ -15,16 +17,17 @@ export function Button({
   size = 'md',
   isLoading = false,
   fullWidth = false,
+  href,
   className,
   disabled,
   children,
   ...props
 }: ButtonProps) {
   const baseStyles =
-    'inline-flex items-center justify-center gap-2 font-heading font-semibold rounded-full border-none cursor-pointer transition-all duration-150 whitespace-nowrap select-none'
+    'inline-flex items-center justify-center gap-2 font-heading font-semibold rounded-full border-none cursor-pointer transition-all duration-150 whitespace-nowrap select-none no-underline'
 
   const variants = {
-    primary: 'bg-gold text-forest hover:bg-[#b8852e] hover:-translate-y-px active:translate-y-0',
+    primary: 'bg-gold text-forest hover:bg-[#b8852e] hover:-translate-y-px active:translate-y-0 shadow-lg shadow-gold/20',
     ghost:   'bg-transparent text-gold border border-gold hover:bg-gold hover:text-forest',
     outline: 'bg-transparent text-forest border border-soft-sage hover:border-forest',
     danger:  'bg-red-600 text-white hover:bg-red-700',
@@ -36,16 +39,26 @@ export function Button({
     lg: 'h-14 px-8 text-base',
   }
 
+  const combinedClasses = cn(
+    baseStyles,
+    variants[variant],
+    sizes[size],
+    fullWidth && 'w-full',
+    (disabled || isLoading) && 'opacity-50 cursor-not-allowed translate-y-0',
+    className
+  )
+
+  if (href) {
+    return (
+      <Link href={href} className={combinedClasses}>
+        {children}
+      </Link>
+    )
+  }
+
   return (
     <button
-      className={cn(
-        baseStyles,
-        variants[variant],
-        sizes[size],
-        fullWidth && 'w-full',
-        (disabled || isLoading) && 'opacity-50 cursor-not-allowed translate-y-0',
-        className
-      )}
+      className={combinedClasses}
       disabled={disabled || isLoading}
       {...props}
     >

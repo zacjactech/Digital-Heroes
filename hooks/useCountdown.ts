@@ -10,6 +10,10 @@ interface CountdownState {
   isExpired: boolean
 }
 
+function getInitialState(): CountdownState {
+  return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: false }
+}
+
 function getTimeRemaining(targetDate: Date): CountdownState {
   const now = Date.now()
   const target = targetDate.getTime()
@@ -35,18 +39,24 @@ function getTimeRemaining(targetDate: Date): CountdownState {
 export function useCountdown(targetDate: Date | string): CountdownState {
   const target = typeof targetDate === 'string' ? new Date(targetDate) : targetDate
 
-  const [state, setState] = useState<CountdownState>(() => getTimeRemaining(target))
+  const [state, setState] = useState<CountdownState>(getInitialState)
+  const [mounted, setMounted] = useState(false)
 
   const tick = useCallback(() => {
     setState(getTimeRemaining(target))
   }, [target])
 
   useEffect(() => {
-    if (state.isExpired) return
+    setMounted(true)
+    setState(getTimeRemaining(target))
+  }, [target])
+
+  useEffect(() => {
+    if (state.isExpired || !mounted) return
 
     const interval = setInterval(tick, 1000)
     return () => clearInterval(interval)
-  }, [tick, state.isExpired])
+  }, [tick, state.isExpired, mounted])
 
   return state
 }

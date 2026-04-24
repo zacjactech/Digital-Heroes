@@ -1,24 +1,43 @@
-'use client'
+import { createClient } from '@/lib/supabase/server'
+import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar'
+import { MobileTabBar } from '@/components/dashboard/MobileTabBar'
 
-// Dashboard layout — wraps all authenticated user routes
-// Includes sidebar (desktop) and bottom tab bar (mobile)
-
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <div className="flex min-h-dvh bg-mist">
-      {/* DashboardSidebar — TODO: implement from stitch/member_dashboard */}
-      <aside className="hidden md:flex w-64 bg-forest flex-col" />
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  let profile = null
+  if (user) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('full_name, subscription_status, subscription_end_at')
+      .eq('id', user.id)
+      .single()
+    
+    if (data) {
+      profile = {
+        fullName: data.full_name || 'Member',
+        subscriptionStatus: data.subscription_status || 'inactive',
+        subscriptionExpires: data.subscription_end_at ? new Date(data.subscription_end_at).toLocaleDateString('en-GB') : 'N/A'
+      }
+    }
+  }
 
-      <main className="flex-1 overflow-auto">
-        {children}
+  return (
+    <div className="flex min-h-screen bg-auth-bg text-auth-text">
+      <DashboardSidebar user={profile || undefined} />
+
+      <main className="flex-1 md:ml-[260px] p-6 md:p-10 pb-24 md:pb-10">
+        <div className="max-w-7xl mx-auto">
+          {children}
+        </div>
       </main>
 
-      {/* MobileTabBar — TODO: implement from stitch/mobile_dashboard */}
-      <nav className="fixed bottom-0 left-0 right-0 md:hidden bg-forest" />
+      <MobileTabBar />
     </div>
   )
 }

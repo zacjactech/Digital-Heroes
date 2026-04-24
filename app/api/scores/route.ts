@@ -3,6 +3,13 @@ import { createClient } from '@/lib/supabase/server'
 import { scoreSchema } from '@/lib/validators/score.schema'
 import { apiSuccess, apiError } from '@/lib/utils'
 
+type ScoresInsert = {
+  user_id: string
+  score_value: number
+  score_date: string
+  notes: string | null
+}
+
 const MAX_SCORES_PER_USER = 5
 
 export async function GET(): Promise<NextResponse> {
@@ -23,10 +30,9 @@ export async function GET(): Promise<NextResponse> {
 
     if (error) throw new Error(`Score fetch failed: ${error.message}`)
 
-    return NextResponse.json(apiSuccess(data))
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Internal server error'
-    return NextResponse.json(apiError(message), { status: 500 })
+    return NextResponse.json(apiSuccess(data ?? []))
+  } catch {
+    return NextResponse.json(apiError('Internal server error'), { status: 500 })
   }
 }
 
@@ -39,22 +45,21 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json(apiError('Unauthorized'), { status: 401 })
     }
 
-    // Check subscription status
     const { data: profile } = await supabase
       .from('profiles')
       .select('subscription_status')
       .eq('id', user.id)
-      .single() as any
+      .single()
 
-    if (profile?.subscription_status !== 'active') {
+    const profileRecord = profile as { subscription_status?: string } | null
+    if (!profileRecord || profileRecord.subscription_status !== 'active') {
       return NextResponse.json(
         apiError('Your subscription is not active', 'SUBSCRIPTION_LAPSED'),
         { status: 403 }
       )
     }
 
-    // Validate input
-    const body: unknown = await request.json()
+    const body = await request.json()
     const parsed = scoreSchema.safeParse(body)
 
     if (!parsed.success) {
@@ -64,7 +69,6 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const { value, scoreDate, notes } = parsed.data
 
-    // Check for duplicate date
     const { data: existing } = await supabase
       .from('scores')
       .select('id')
@@ -79,7 +83,6 @@ export async function POST(request: Request): Promise<NextResponse> {
       )
     }
 
-    // Rolling 5-score logic: delete oldest if at limit
     const { data: existingScores } = await supabase
       .from('scores')
       .select('id, score_date')
@@ -87,20 +90,25 @@ export async function POST(request: Request): Promise<NextResponse> {
       .order('score_date', { ascending: true })
 
     if ((existingScores?.length ?? 0) >= MAX_SCORES_PER_USER) {
-      const oldest = existingScores?.[0] as any
+      const oldest = existingScores?.[0] as { id: string } | undefined
       if (oldest) {
-        await (supabase.from('scores' as any) as any).delete().eq('id', oldest.id)
+        await supabase.from('scores').delete().eq('id', oldest.id)
       }
     }
 
-    // Insert new score
-    const scoreBody = body as any
-    const { data: inserted, error: insertError } = await (supabase.from('scores' as any) as any).insert({
+    const scoreData: ScoresInsert = {
       user_id: user.id,
-      value: scoreBody.value,
-      score_date: new Date().toISOString(),
-      notes: scoreBody.notes,
-    }).select().single() as any
+      score_value: value,
+      score_date: scoreDate,
+      notes: notes ?? null,
+    }
+
+    const { data: inserted, error: insertError } = await (supabase as unknown as { from: (table: string) => { insert: (data: ScoresInsert) => { select: () => { single: () => Promise<{ data: unknown; error: Error | null }> } } } })
+      .from('scores')
+      .insert(scoreData)
+      .select()
+      .single()
+
     if (insertError) throw new Error(`Score insert failed: ${insertError.message}`)
 
     return NextResponse.json(apiSuccess(inserted), { status: 201 })
