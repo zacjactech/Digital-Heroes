@@ -1,0 +1,558 @@
+---
+description: Digital Heroes — Full-Stack Golf Charity Platform · AI IDE Master Rules
+globs: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.css", "**/*.sql", "**/*.json", "**/*.md"]
+alwaysApply: true
+---
+
+# ╔══════════════════════════════════════════════════════════════╗
+# ║        DIGITAL HEROES · AI IDE PROJECT RULES                ║
+# ║        Golf · Charity · Prize Draws · Subscriptions         ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+## ROLE & MISSION
+You are a senior full-stack engineer building "Digital Heroes" — a subscription-driven
+golf charity web platform. Your code must be production-grade, mobile-first,
+component-based, and fully modularised. Every decision should reflect the PRD
+located at `/PRD_Full_Stack_Training.pdf`.
+
+---
+
+## 1. SKILL ACTIVATION — ALWAYS CHECK STITCH FOLDER FIRST
+
+### UI Reference (MANDATORY before writing any UI code)
+Before implementing ANY page, component, or UI element:
+1. Check `/stitch/` folder at project root for existing HTML and PNG mockups
+2. Match component names exactly to stitch file names
+3. Implement pixel-faithful to the stitch mockup — do not invent new layouts
+4. Stitch folder structure:
+   ```
+   /stitch/
+     ├── *.html    ← interactive HTML mockups (use these as implementation blueprint)
+     └── *.png     ← visual reference screenshots
+   ```
+5. When a stitch file exists for a component, READ IT FULLY before writing a single line of code
+
+### Available Skills (activate based on task)
+| Task | Skill to activate |
+|------|------------------|
+| Any UI / frontend component | `frontend-design` skill → read `/mnt/skills/public/frontend-design/SKILL.md` |
+| Stripe integration / payments | `stripe-projects` & `stripe-best-practices` skills → read `.agents/skills/stripe-projects/SKILL.md` |
+| Word document generation | `docx` skill → read `/mnt/skills/public/docx/SKILL.md` |
+| PDF reading / extraction | `pdf-reading` skill → read `/mnt/skills/public/pdf-reading/SKILL.md` |
+| PDF creation / manipulation | `pdf` skill → read `/mnt/skills/public/pdf/SKILL.md` |
+| Spreadsheet / Excel output | `xlsx` skill → read `/mnt/skills/public/xlsx/SKILL.md` |
+| PowerPoint / slides | `pptx` skill → read `/mnt/skills/public/pptx/SKILL.md` |
+| Reading uploaded files | `file-reading` skill → read `/mnt/skills/public/file-reading/SKILL.md` |
+| Anthropic product questions | `product-self-knowledge` → read `/mnt/skills/public/product-self-knowledge/SKILL.md` |
+
+**Rule:** Never implement a file-type output or complex UI without first reading the
+relevant SKILL.md. Skills contain environment constraints that training data does not.
+
+---
+
+## 2. TECH STACK (non-negotiable)
+
+```
+Frontend       Next.js 15 (App Router)
+UI Library     React 19
+Styling        Tailwind CSS v4 + CSS custom properties
+Animations     Framer Motion v12 (respect SSR constraints)
+State          Zustand (client state only)
+Forms          React Hook Form + Zod validation
+Auth           Supabase Auth (JWT)
+Database       Supabase PostgreSQL (with RLS)
+Storage        Supabase Storage (winner proof uploads)
+Payments       Stripe (Checkout Sessions + Webhooks)
+Email          Resend
+Deployment     Vercel (NEW account — not personal)
+Package mgr    pnpm
+TypeScript     strict mode, no `any`
+```
+
+---
+
+## 3. BRAND & DESIGN SYSTEM (sourced from brand PDF)
+
+### Color Tokens (CSS custom properties — EXACT HEX)
+```css
+/* Always use these variables — never hardcode hex directly in components */
+--color-forest:     #1A3C34;   /* Primary dark — nav, hero bg, sidebar, badges */
+--color-gold:       #C89749;   /* Primary accent — CTAs, highlights, dividers */
+--color-emerald:    #4CAF82;   /* Secondary accent — success, bullets, positive */
+--color-canopy:     #2E6B5E;   /* Hover state for primary */
+--color-ink:        #1C2B26;   /* Body text */
+--color-moss:       #3D5A52;   /* Secondary text, labels */
+--color-slate:      #6B8F84;   /* Muted text, captions */
+--color-mist:       #F4F9F6;   /* Page background */
+--color-sage-tint:  #F0F7F3;   /* Card backgrounds, alternating rows */
+--color-leaf-wash:  #E2F2EA;   /* Input backgrounds, table headers */
+--color-soft-sage:  #D0E8DC;   /* Borders, dividers */
+```
+
+### Tailwind Config Extension
+```js
+// tailwind.config.ts — always extend with these
+colors: {
+  forest:      '#1A3C34',
+  gold:        '#C89749',
+  emerald:     '#4CAF82',
+  canopy:      '#2E6B5E',
+  ink:         '#1C2B26',
+  moss:        '#3D5A52',
+  slate:       '#6B8F84',
+  mist:        '#F4F9F6',
+  'sage-tint': '#F0F7F3',
+  'leaf-wash': '#E2F2EA',
+  'soft-sage': '#D0E8DC',
+}
+```
+
+### Typography
+```
+Display / Hero    → Playfair Display, 700–800  (emotional headlines only)
+Headings          → DM Sans, 600–700
+Body              → DM Sans, 400–500
+Numbers / Mono    → JetBrains Mono, 400–600   (scores, prices, countdowns, draw numbers)
+```
+
+### Design Principles
+- NOT a traditional golf site — zero fairways, plaid, or club imagery as primary design language
+- Emotion-first: lead with charity impact, then winning excitement
+- Dark hero sections (#1A3C34) = authority and luxury
+- Light content sections (#F4F9F6) = breathing room and legibility
+- Gold (#C89749) divider lines between major page sections
+- All number/score displays use JetBrains Mono — always
+- Subtle Framer Motion fade-up on scroll for every section
+- Mobile-first always — design for 375px, enhance upward
+
+---
+
+## 4. PROJECT STRUCTURE (enforce strictly)
+
+```
+/
+├── app/                          # Next.js App Router
+│   ├── (public)/                 # Public routes (no auth required)
+│   │   ├── page.tsx              # Landing page
+│   │   ├── charities/
+│   │   │   ├── page.tsx          # Charity directory
+│   │   │   └── [id]/page.tsx     # Individual charity
+│   │   └── draws/[id]/page.tsx   # Public draw results
+│   ├── (auth)/                   # Auth routes
+│   │   ├── login/page.tsx
+│   │   └── register/page.tsx
+│   ├── (dashboard)/              # Authenticated user routes
+│   │   ├── layout.tsx            # Dashboard layout with sidebar
+│   │   ├── dashboard/page.tsx
+│   │   ├── scores/page.tsx
+│   │   ├── draws/page.tsx
+│   │   ├── charities/page.tsx
+│   │   └── winnings/page.tsx
+│   ├── (admin)/                  # Admin routes (role-gated)
+│   │   ├── layout.tsx            # Admin layout with admin sidebar
+│   │   ├── admin/page.tsx        # Admin dashboard
+│   │   ├── admin/users/page.tsx
+│   │   ├── admin/draws/page.tsx
+│   │   ├── admin/charities/page.tsx
+│   │   └── admin/winners/page.tsx
+│   └── api/
+│       ├── webhooks/stripe/route.ts
+│       ├── scores/route.ts
+│       ├── draws/route.ts
+│       ├── draws/[id]/simulate/route.ts
+│       ├── draws/[id]/publish/route.ts
+│       ├── charities/route.ts
+│       └── admin/route.ts
+│
+├── components/
+│   ├── ui/                       # Primitive components (always reusable)
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   ├── Card.tsx
+│   │   ├── Badge.tsx
+│   │   ├── StatusPill.tsx
+│   │   ├── ScoreChip.tsx         # ← core reusable: 48×48px score display
+│   │   ├── CountdownTimer.tsx
+│   │   ├── GoldDivider.tsx
+│   │   └── Modal.tsx
+│   ├── layout/
+│   │   ├── Navbar.tsx            # Public nav
+│   │   ├── DashboardSidebar.tsx  # User sidebar
+│   │   ├── AdminSidebar.tsx      # Admin sidebar
+│   │   ├── MobileTabBar.tsx      # Bottom tab bar (mobile)
+│   │   └── Footer.tsx
+│   ├── landing/                  # Landing page section components
+│   │   ├── HeroSection.tsx
+│   │   ├── HowItWorks.tsx
+│   │   ├── PrizeTiers.tsx
+│   │   ├── CharitySpotlight.tsx
+│   │   ├── DrawCountdown.tsx
+│   │   └── FinalCTA.tsx
+│   ├── dashboard/                # Dashboard-specific components
+│   │   ├── SubscriptionCard.tsx
+│   │   ├── ScoreTracker.tsx
+│   │   ├── NextDrawCard.tsx
+│   │   ├── MyCharityCard.tsx
+│   │   └── RecentResultsTable.tsx
+│   ├── scores/
+│   │   ├── ScoreEntryForm.tsx
+│   │   └── RollingScoresList.tsx
+│   ├── draws/
+│   │   ├── DrawnNumbers.tsx
+│   │   ├── PrizePoolCards.tsx
+│   │   ├── PersonalResultCard.tsx
+│   │   └── WinnersTable.tsx
+│   ├── charities/
+│   │   ├── CharityCard.tsx
+│   │   ├── CharityGrid.tsx
+│   │   └── FeaturedCharity.tsx
+│   └── admin/
+│       ├── KPICard.tsx
+│       ├── DrawManager.tsx
+│       ├── UserTable.tsx
+│       ├── VerificationCard.tsx
+│       └── AnalyticsChart.tsx
+│
+├── lib/
+│   ├── supabase/
+│   │   ├── client.ts             # Browser Supabase client
+│   │   ├── server.ts             # Server Supabase client
+│   │   └── middleware.ts         # Auth middleware
+│   ├── stripe/
+│   │   ├── client.ts
+│   │   └── helpers.ts            # Price IDs, checkout session builder
+│   ├── draw-engine/
+│   │   ├── random.ts             # Random draw logic
+│   │   ├── algorithmic.ts        # Weighted by score frequency
+│   │   ├── matcher.ts            # computeMatch(userScores, drawnNumbers)
+│   │   └── prize-calculator.ts   # Auto-calculate prize tiers
+│   ├── email/
+│   │   ├── sender.ts             # Resend wrapper
+│   │   └── templates/
+│   │       ├── draw-result.tsx
+│   │       ├── winner-alert.tsx
+│   │       └── subscription-renewal.tsx
+│   └── validators/
+│       ├── score.schema.ts       # Zod: score 1–45, date unique per user
+│       └── draw.schema.ts
+│
+├── hooks/
+│   ├── useSubscription.ts        # Subscription status + realtime
+│   ├── useScores.ts              # CRUD for user scores
+│   ├── useDraws.ts               # Draw data + participation
+│   └── useCountdown.ts           # Countdown timer hook
+│
+├── store/
+│   └── useAppStore.ts            # Zustand global store
+│
+├── types/
+│   └── index.ts                  # All TypeScript interfaces
+│
+├── styles/
+│   └── globals.css               # CSS custom properties, base styles
+│
+├── stitch/                       # ← UI REFERENCE FOLDER
+│   ├── *.html                    # Interactive HTML mockups
+│   └── *.png                     # Visual reference screenshots
+│
+└── supabase/
+    └── migrations/
+        └── 001_initial_schema.sql
+```
+
+---
+
+## 5. CODING RULES
+
+### General
+- TypeScript strict mode — `no any`, explicit return types on all functions
+- No default exports from component files — named exports only (except page.tsx)
+- Every component receives props via a typed interface: `interface ComponentNameProps {}`
+- Max file length: 200 lines — split into sub-components if exceeded
+- Every async server function must have try/catch with typed error handling
+
+### Components
+```tsx
+// CORRECT — named export, typed props, mobile-first
+interface ScoreChipProps {
+  value: number
+  date: string
+  isActive?: boolean
+  isEmpty?: boolean
+  isOldest?: boolean
+  onEdit?: () => void
+  onDelete?: () => void
+}
+
+export function ScoreChip({
+  value,
+  date,
+  isActive = false,
+  isEmpty = false,
+  isOldest = false,
+  onEdit,
+  onDelete,
+}: ScoreChipProps) {
+  // implementation
+}
+```
+
+### Styling Rules
+- Tailwind utility classes first
+- Custom CSS only in `globals.css` via CSS variables
+- Never hardcode brand hex values in component files — always use Tailwind color tokens
+- Mobile-first: base styles = mobile, `md:` and `lg:` for larger screens
+- All interactive elements minimum 44px touch target on mobile
+
+### Server vs Client
+```
+'use server'  → all data fetching, mutations, Supabase server calls
+'use client'  → Framer Motion, useState, useEffect, Zustand, form interactions
+```
+
+### Supabase Pattern
+```ts
+// Always use server client for mutations
+import { createServerClient } from '@/lib/supabase/server'
+
+// Always handle RLS errors explicitly
+const { data, error } = await supabase.from('scores').select('*')
+if (error) throw new Error(`Score fetch failed: ${error.message}`)
+```
+
+---
+
+## 6. DATABASE RULES
+
+### Schema Reference
+```sql
+-- Core tables (always reference these exact names)
+profiles          -- extends auth.users
+scores            -- rolling 5 per user, unique date per user
+charities         -- charity directory
+draws             -- monthly draws
+draw_entries      -- snapshot of user scores at draw time
+winners           -- verified winners
+subscription_events -- Stripe webhook audit log
+```
+
+### Score Rolling Logic (critical — enforce always)
+```ts
+// Before inserting a new score:
+// 1. Count existing scores for user
+// 2. If count >= 5, delete the oldest (by score_date ASC)
+// 3. Check for duplicate date — reject with error if exists
+// 4. Insert new score
+// This logic lives in: /lib/draw-engine/matcher.ts
+```
+
+### RLS Policy Rules
+- Users can only read/write their own rows — enforce via `auth.uid() = user_id`
+- Admin operations use service role key — server-side only, never expose to client
+- Subscription status check on every authenticated request via middleware
+
+---
+
+## 7. STRIPE RULES
+
+### Webhook Handler (critical path)
+```ts
+// /app/api/webhooks/stripe/route.ts
+// Must handle ALL of these events:
+// - invoice.paid               → activate subscription
+// - customer.subscription.updated → update plan
+// - customer.subscription.deleted → mark as cancelled
+// - invoice.payment_failed     → mark as lapsed
+// Always verify webhook signature with Stripe-Signature header
+// Always store raw event in subscription_events table
+```
+
+### Subscription States
+```ts
+type SubscriptionStatus = 'active' | 'inactive' | 'lapsed' | 'cancelled'
+// Access gate: only 'active' subscribers can enter draws
+// Lapsed = payment failed but not yet cancelled
+// Cancelled = explicitly cancelled
+```
+
+---
+
+## 8. DRAW ENGINE RULES
+
+### Match Logic
+```ts
+// /lib/draw-engine/matcher.ts
+export function computeMatch(userScores: number[], drawnNumbers: number[]): number {
+  return userScores.filter(s => drawnNumbers.includes(s)).length
+  // Returns 0–5. Only 3, 4, 5 qualify as winners.
+}
+```
+
+### Prize Pool
+```ts
+// /lib/draw-engine/prize-calculator.ts
+// 5-match = 40% of pool (jackpot — rolls over if unclaimed)
+// 4-match = 35% of pool
+// 3-match = 25% of pool
+// Split equally among multiple winners in same tier
+// Jackpot carry-forward stored in draws.jackpot_carry_in
+```
+
+### Draw Modes
+```ts
+type DrawMode = 'random' | 'algorithmic'
+// random: Math.random() based lottery
+// algorithmic: weighted by most/least frequent Stableford scores across all active users
+// Admin must run simulation before publishing
+// Simulation does NOT create winners — only preview
+```
+
+---
+
+## 9. MOBILE-FIRST RULES
+
+### Breakpoints
+```
+base (375px+)  → single column, full-width cards, bottom tab bar
+sm  (640px+)   → 2 columns where appropriate
+md  (768px+)   → sidebar appears, bottom tab hides
+lg  (1024px+)  → full desktop layout
+```
+
+### Mobile-specific components
+- Bottom tab bar (5 tabs: Home / Scores / Draw / Charity / Profile)
+- Score chips horizontal scroll on mobile
+- Countdown timer wraps to 2×2 on very small screens
+- All CTA buttons full-width on mobile (`w-full md:w-auto`)
+- Touch targets minimum `h-11` (44px) everywhere
+
+---
+
+## 10. FRAMER MOTION RULES (v12 SSR-safe)
+
+```tsx
+// ALWAYS import from 'motion/react' not 'framer-motion' in Next.js 15
+import { motion } from 'motion/react'
+
+// NEVER use motion components in Server Components
+// Wrap in 'use client' component or use LazyMotion
+
+// Standard fade-up pattern for sections:
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } }
+}
+
+// Stagger children:
+const stagger = {
+  visible: { transition: { staggerChildren: 0.12 } }
+}
+
+// Draw number reveal (flip-in):
+// Each number: rotateX: [90, 0], opacity: [0, 1], delay: index * 0.3
+```
+
+---
+
+## 11. ENVIRONMENT VARIABLES
+
+```bash
+# .env.local — never commit this file
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=        # server only — never NEXT_PUBLIC_
+STRIPE_SECRET_KEY=                # server only
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=            # server only
+STRIPE_MONTHLY_PRICE_ID=
+STRIPE_YEARLY_PRICE_ID=
+RESEND_API_KEY=                   # server only
+NEXT_PUBLIC_APP_URL=
+```
+
+---
+
+## 12. SECURITY RULES
+
+- Never expose `SUPABASE_SERVICE_ROLE_KEY` or `STRIPE_SECRET_KEY` to client
+- Always verify Stripe webhook signatures — reject unverified requests with 400
+- Validate all user input with Zod before any database operation
+- Rate limit score entry endpoints — one score per date per user enforced at DB level (unique constraint)
+- Admin routes must check `profiles.role = 'admin'` server-side on every request
+- Winner proof uploads: validate file type (image only) and size (max 5MB) before Supabase Storage upload
+
+---
+
+## 13. ERROR HANDLING PATTERNS
+
+```ts
+// API routes — always return typed responses
+type ApiResponse<T> = 
+  | { success: true; data: T }
+  | { success: false; error: string; code?: string }
+
+// Score entry — specific error codes
+'DUPLICATE_DATE'      // Score for this date already exists
+'INVALID_RANGE'       // Score not between 1–45
+'SUBSCRIPTION_LAPSED' // User not active subscriber
+'MAX_SCORES_ERROR'    // Should never happen but guard anyway
+
+// Always show user-friendly messages — never expose DB errors to client
+```
+
+---
+
+## 14. TESTING CHECKLIST (per PRD — verify before each commit)
+
+```
+□ User signup & login
+□ Subscription flow — monthly and yearly
+□ Score entry — 5-score rolling logic (oldest auto-deleted)
+□ Duplicate date rejection
+□ Score range validation (1–45)
+□ Draw simulation (dry run, no winners created)
+□ Draw publish — match calculation, winner creation, jackpot rollover
+□ Charity selection and contribution % calculation
+□ Winner verification flow (proof upload → approve/reject → mark paid)
+□ User dashboard — all 5 modules functional
+□ Admin panel — full draw management
+□ Responsive design — 375px mobile and 1280px desktop
+□ Error handling and edge cases
+□ Stripe webhook — all 4 event types handled
+□ RLS — user cannot access another user's data
+```
+
+---
+
+## 15. COMMIT CONVENTIONS
+
+```
+feat(scores): add rolling 5-score deletion logic
+feat(draws): implement algorithmic draw mode
+feat(admin): winner verification flow
+fix(stripe): handle lapsed subscription state
+fix(auth): redirect unauthenticated users from dashboard
+style(landing): polish hero section mobile spacing
+chore(db): add missing RLS policy for draw_entries
+```
+
+---
+
+## 16. WORKFLOW — HOW TO IMPLEMENT A NEW PAGE
+
+1. **Check stitch folder** → open `/stitch/[page-name].html` and `/stitch/[page-name].png`
+2. **Read relevant SKILL.md** → always read `frontend-design` SKILL for any UI work
+3. **Check PRD** → verify requirements against `/PRD_Full_Stack_Training.pdf`
+4. **Create route file** → `app/(group)/page-name/page.tsx`
+5. **Create layout components** → in `/components/[section]/`
+6. **Create primitive components** → in `/components/ui/` if new
+7. **Wire data** → Server Component fetches, Client Component interactions
+8. **Apply brand tokens** → only use Tailwind config colors, never raw hex
+9. **Add Framer Motion** → fade-up on sections, micro-interactions on controls
+10. **Mobile-first check** → test at 375px before widening
+11. **Run testing checklist** → relevant items from Section 14
+
+---
+
+*This rules file is the single source of truth for all AI-assisted development on this project.
+Every code generation request must comply with these rules before output.*

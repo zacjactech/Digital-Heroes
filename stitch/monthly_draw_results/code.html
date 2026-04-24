@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Monthly Draw Results - Digital Heroes</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=JetBrains+Mono:wght@500&amp;family=Playfair+Display:wght@800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#001d35",
+                      "on-surface-variant": "#d3c4b3",
+                      "surface-container-high": "#2e2923",
+                      "on-tertiary": "#003257",
+                      "surface-container-low": "#1f1b15",
+                      "inverse-surface": "#ebe1d7",
+                      "on-secondary-fixed": "#002113",
+                      "on-error": "#690005",
+                      "on-tertiary-fixed-variant": "#144976",
+                      "on-primary": "#442c00",
+                      "on-background": "#ebe1d7",
+                      "surface-container": "#231f19",
+                      "secondary": "#77d9a9",
+                      "inverse-primary": "#7f570b",
+                      "inverse-on-surface": "#353029",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-tertiary-container": "#003961",
+                      "tertiary-container": "#77a3d5",
+                      "surface-variant": "#39342d",
+                      "error": "#ffb4ab",
+                      "on-secondary": "#003824",
+                      "surface-dim": "#17130d",
+                      "surface-container-lowest": "#110e08",
+                      "tertiary-fixed": "#d1e4ff",
+                      "on-secondary-container": "#bbffd9",
+                      "background": "#17130d",
+                      "surface": "#17130d",
+                      "on-primary-container": "#4c3100",
+                      "on-error-container": "#ffdad6",
+                      "error-container": "#93000a",
+                      "tertiary-fixed-dim": "#9ecafe",
+                      "surface-bright": "#3e3832",
+                      "primary-fixed": "#ffddb0",
+                      "secondary-container": "#017d54",
+                      "primary-container": "#c89749",
+                      "surface-container-highest": "#39342d",
+                      "primary": "#f3bd6b",
+                      "primary-fixed-dim": "#f3bd6b",
+                      "on-primary-fixed": "#281800",
+                      "secondary-fixed": "#93f6c4",
+                      "tertiary": "#9ecafe",
+                      "outline": "#9c8f7f",
+                      "outline-variant": "#4f4538",
+                      "surface-tint": "#f3bd6b",
+                      "on-primary-fixed-variant": "#614000",
+                      "on-surface": "#ebe1d7",
+                      "secondary-fixed-dim": "#77d9a9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "element-gap": "24px",
+                      "container-max": "1280px",
+                      "gutter": "32px",
+                      "unit": "8px",
+                      "section-padding": "120px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "DM Sans"
+                      ],
+                      "hero-h1": [
+                              "Playfair Display"
+                      ],
+                      "subhead-h3": [
+                              "DM Sans"
+                      ],
+                      "stat-display": [
+                              "JetBrains Mono"
+                      ],
+                      "label-caps": [
+                              "DM Sans"
+                      ],
+                      "body-lg": [
+                              "DM Sans"
+                      ],
+                      "section-h2": [
+                              "DM Sans"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "hero-h1": [
+                              "72px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "subhead-h3": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "stat-display": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "section-h2": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-[#1A3C34] text-on-surface antialiased">
+<!-- TopNavBar -->
+<header class="hidden md:flex flex justify-between items-center px-8 py-6 w-full max-w-7xl mx-auto bg-[#1A3C34] dark:bg-[#1A3C34] font-serif tracking-tight border-b border-[#C89749]/30 docked full-width top-0 z-50 transition-colors duration-300">
+<div class="text-xl font-serif uppercase tracking-widest text-[#C89749]">
+            Digital Heroes
+        </div>
+<nav class="flex gap-element-gap items-center">
+<a class="text-white/70 hover:text-[#C89749] transition-colors duration-300 text-body-md font-body-md scale-95 active:duration-75" href="#">Draws</a>
+<a class="text-[#C89749] border-b border-[#C89749] pb-1 hover:text-[#C89749] transition-colors duration-300 text-body-md font-body-md scale-95 active:duration-75" href="#">Prizes</a>
+<a class="text-white/70 hover:text-[#C89749] transition-colors duration-300 text-body-md font-body-md scale-95 active:duration-75" href="#">Winners</a>
+<a class="text-white/70 hover:text-[#C89749] transition-colors duration-300 text-body-md font-body-md scale-95 active:duration-75" href="#">About</a>
+<button class="bg-primary text-on-primary px-6 py-3 rounded-DEFAULT font-label-caps text-label-caps ml-4 hover:bg-primary-container transition-colors">Join Club</button>
+<button class="text-[#C89749] ml-4 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+</button>
+</nav>
+</header>
+<main class="w-full">
+<!-- Hero Header -->
+<section class="w-full max-w-container-max mx-auto px-gutter pt-[80px] pb-section-padding text-center">
+<h1 class="font-hero-h1 text-hero-h1 text-on-surface mb-6">Monthly Draw Results</h1>
+<p class="font-subhead-h3 text-subhead-h3 text-surface-variant mb-12">October 14, 2024</p>
+<div class="w-24 h-px bg-[#C89749] mx-auto mb-16"></div>
+<!-- Drawn Numbers Showcase -->
+<div class="flex flex-col items-center">
+<span class="font-label-caps text-label-caps text-primary uppercase mb-8 tracking-[0.2em]">Tonight's Numbers</span>
+<div class="flex gap-6 justify-center">
+<div class="w-20 h-20 rounded-full border border-[#C89749] flex items-center justify-center shadow-[0_0_15px_rgba(200,151,73,0.3)] bg-[#1A3C34]">
+<span class="font-stat-display text-stat-display text-primary">71</span>
+</div>
+<div class="w-20 h-20 rounded-full border border-[#C89749] flex items-center justify-center shadow-[0_0_15px_rgba(200,151,73,0.3)] bg-[#1A3C34]">
+<span class="font-stat-display text-stat-display text-primary">72</span>
+</div>
+<div class="w-20 h-20 rounded-full border border-[#C89749] flex items-center justify-center shadow-[0_0_15px_rgba(200,151,73,0.3)] bg-[#1A3C34]">
+<span class="font-stat-display text-stat-display text-primary">75</span>
+</div>
+<div class="w-20 h-20 rounded-full border border-[#C89749] flex items-center justify-center shadow-[0_0_15px_rgba(200,151,73,0.3)] bg-[#1A3C34]">
+<span class="font-stat-display text-stat-display text-primary">80</span>
+</div>
+<div class="w-20 h-20 rounded-full border border-[#C89749] flex items-center justify-center shadow-[0_0_15px_rgba(200,151,73,0.3)] bg-[#1A3C34]">
+<span class="font-stat-display text-stat-display text-primary">88</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Prize Pool Results -->
+<section class="w-full max-w-container-max mx-auto px-gutter pb-section-padding">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- 5-Match Card -->
+<div class="bg-surface-bright border border-outline-variant p-8 flex flex-col items-center text-center relative overflow-hidden">
+<div class="absolute top-0 w-full h-1 bg-primary"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-4 tracking-widest">5-Match Jackpot</span>
+<span class="font-stat-display text-[48px] leading-none text-primary mb-6">£10,000</span>
+<span class="bg-surface-variant text-on-surface px-4 py-1 rounded-DEFAULT font-label-caps text-label-caps border border-outline-variant text-[10px]">Rolled Over</span>
+</div>
+<!-- 4-Match Card -->
+<div class="bg-surface border border-outline-variant p-8 flex flex-col items-center text-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-4 tracking-widest">4-Match</span>
+<span class="font-stat-display text-[32px] leading-none text-on-surface mb-6">£500</span>
+<span class="font-body-md text-body-md text-surface-variant">2 Winners</span>
+</div>
+<!-- 3-Match Card -->
+<div class="bg-surface border border-outline-variant p-8 flex flex-col items-center text-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-4 tracking-widest">3-Match</span>
+<span class="font-stat-display text-[32px] leading-none text-on-surface mb-6">£20</span>
+<span class="font-body-md text-body-md text-surface-variant">45 Winners</span>
+</div>
+</div>
+</section>
+<!-- Personal Results Card -->
+<section class="w-full max-w-3xl mx-auto px-gutter pb-section-padding">
+<div class="bg-surface-container border border-primary p-10 relative">
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-6 py-2 font-label-caps text-label-caps tracking-widest uppercase border border-[#1A3C34]">
+                    Did You Win?
+                </div>
+<div class="text-center mt-6 mb-10">
+<p class="font-body-lg text-body-lg text-on-surface mb-6">Your Numbers</p>
+<div class="flex gap-4 justify-center flex-wrap">
+<div class="w-16 h-16 rounded-full border-2 border-primary bg-primary/20 flex items-center justify-center shadow-[0_0_10px_rgba(200,151,73,0.5)]">
+<span class="font-stat-display text-[20px] text-primary">71</span>
+</div>
+<div class="w-16 h-16 rounded-full border border-outline-variant flex items-center justify-center opacity-50">
+<span class="font-stat-display text-[20px] text-on-surface">74</span>
+</div>
+<div class="w-16 h-16 rounded-full border-2 border-primary bg-primary/20 flex items-center justify-center shadow-[0_0_10px_rgba(200,151,73,0.5)]">
+<span class="font-stat-display text-[20px] text-primary">72</span>
+</div>
+<div class="w-16 h-16 rounded-full border border-outline-variant flex items-center justify-center opacity-50">
+<span class="font-stat-display text-[20px] text-on-surface">70</span>
+</div>
+<div class="w-16 h-16 rounded-full border-2 border-primary bg-primary/20 flex items-center justify-center shadow-[0_0_10px_rgba(200,151,73,0.5)]">
+<span class="font-stat-display text-[20px] text-primary">75</span>
+</div>
+</div>
+</div>
+<div class="bg-[#017d54] border border-[#77d9a9]/30 p-4 text-center rounded-DEFAULT">
+<p class="font-subhead-h3 text-subhead-h3 text-white">🎉 You matched 3 numbers! — £20 prize</p>
+</div>
+</div>
+</section>
+<!-- Winners List Table -->
+<section class="w-full max-w-container-max mx-auto px-gutter pb-section-padding">
+<h2 class="font-section-h2 text-section-h2 text-on-surface mb-8 text-center">Recent Winners</h2>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant">
+<th class="py-4 px-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Name</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Match Type</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Prize</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest text-right">Status</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md">
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/20 transition-colors">
+<td class="py-5 px-6 text-on-surface">Mar*** J.</td>
+<td class="py-5 px-6 text-surface-variant">4-Match</td>
+<td class="py-5 px-6 font-stat-display text-primary">£500</td>
+<td class="py-5 px-6 text-right"><span class="bg-[#017d54]/20 text-[#77d9a9] px-3 py-1 rounded-DEFAULT text-[12px] font-bold">Paid</span></td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/20 transition-colors">
+<td class="py-5 px-6 text-on-surface">Sar*** T.</td>
+<td class="py-5 px-6 text-surface-variant">4-Match</td>
+<td class="py-5 px-6 font-stat-display text-primary">£500</td>
+<td class="py-5 px-6 text-right"><span class="bg-[#017d54]/20 text-[#77d9a9] px-3 py-1 rounded-DEFAULT text-[12px] font-bold">Paid</span></td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/20 transition-colors">
+<td class="py-5 px-6 text-on-surface">Jam*** P.</td>
+<td class="py-5 px-6 text-surface-variant">3-Match</td>
+<td class="py-5 px-6 font-stat-display text-on-surface">£20</td>
+<td class="py-5 px-6 text-right"><span class="bg-surface-variant text-on-surface px-3 py-1 rounded-DEFAULT text-[12px] font-bold border border-outline-variant">Processing</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full flex justify-around items-center py-4 px-6 bg-[#1A3C34] dark:bg-[#1A3C34] border-t border-[#C89749]/20 z-50 text-[10px] uppercase tracking-widest font-serif transition-all duration-300 ease-in-out">
+<a class="flex flex-col items-center justify-center text-white/40 hover:text-[#C89749]" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+            Home
+        </a>
+<a class="flex flex-col items-center justify-center text-[#C89749] font-bold hover:text-[#C89749]" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+            Results
+        </a>
+<a class="flex flex-col items-center justify-center text-white/40 hover:text-[#C89749]" href="#">
+<span class="material-symbols-outlined mb-1">volunteer_activism</span>
+            Impact
+        </a>
+<a class="flex flex-col items-center justify-center text-white/40 hover:text-[#C89749]" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+            Profile
+        </a>
+</nav>
+<!-- Footer -->
+<footer class="flex flex-col md:flex-row justify-between items-center px-12 py-20 w-full bg-white dark:bg-[#1A3C34] text-[#1A3C34] dark:text-[#C89749] font-serif text-sm border-t border-[#C89749]/50 mb-16 md:mb-0">
+<div class="font-serif font-bold text-[#1A3C34] dark:text-[#C89749] mb-8 md:mb-0 text-lg tracking-widest uppercase">
+            Digital Heroes
+        </div>
+<div class="flex flex-col md:flex-row gap-6 md:gap-8 items-center mb-8 md:mb-0">
+<a class="opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy Policy</a>
+<a class="opacity-80 hover:opacity-100 transition-opacity" href="#">Terms of Service</a>
+<a class="opacity-80 hover:opacity-100 transition-opacity" href="#">Charity Partners</a>
+<a class="opacity-80 hover:opacity-100 transition-opacity" href="#">Contact</a>
+</div>
+<div class="opacity-80 text-center md:text-right">
+            © 2024 Digital Heroes. Purposeful Luxury.
+        </div>
+</footer>
+</body></html>
